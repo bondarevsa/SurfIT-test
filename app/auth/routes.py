@@ -28,7 +28,7 @@ async def authenticate_user(username: str, password: str, session: AsyncSession 
 
     if not is_password_correct:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
-    jwt_token = create_jwt_token({"sub": user.username})
+    jwt_token = await create_jwt_token({"sub": user.username})
     response = JSONResponse(content={"access_token": jwt_token, "token_type": "bearer"})
     response.set_cookie(key="access_token", value=jwt_token, max_age=3600)
     return response
