@@ -46,3 +46,13 @@ async def delete_advertisements(
         raise HTTPException(status_code=400, detail="It is not your advertisement")
     return {}
 
+
+@app.get('/advertisements/{id}')
+async def get_advertisement(
+        id: int,
+        current_user: User = Depends(get_current_user),
+        session: AsyncSession = Depends(get_async_session)
+):
+    advertisement = await get_advertisement_by_id(id, session)
+    return advertisement
+
