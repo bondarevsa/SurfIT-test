@@ -1,6 +1,7 @@
 from fastapi import Depends, HTTPException
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.responses import JSONResponse
 
 from app import app
 from app.auth.auth import create_jwt_token
@@ -28,4 +29,6 @@ async def authenticate_user(username: str, password: str, session: AsyncSession 
     if not is_password_correct:
         raise HTTPException(status_code=400, detail="Incorrect username or password")
     jwt_token = create_jwt_token({"sub": user.username})
-    return {"access_token": jwt_token, "token_type": "bearer"}
+    response = JSONResponse(content={"access_token": jwt_token, "token_type": "bearer"})
+    response.set_cookie(key="access_token", value=jwt_token, max_age=3600)
+    return response
