@@ -9,6 +9,7 @@ from app.database.database import get_async_session
 
 admin_router = APIRouter(prefix="/admin", tags=["admin"])
 
+
 @admin_router.put('/give-rules/{id}', response_model=dict)
 async def update_is_admin(
         id: int,
