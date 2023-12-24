@@ -1,4 +1,4 @@
-from sqlalchemy import select, desc, delete
+from sqlalchemy import select, desc, delete, asc
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.database import Advertisement, User
@@ -11,8 +11,13 @@ async def create_advertisement(body: str, adv_type: str, header: str, user_id: i
     return advertisement
 
 
-async def get_all_advertisements(session: AsyncSession, limit: int = 10, offset: int = 0):
-    query = select(Advertisement).order_by(desc(Advertisement.timestamp)).limit(limit).offset(offset)
+async def get_all_advertisements(sort_column_obj, session: AsyncSession, limit: int = 10, offset: int = 0, sort_direction: str = 'desc'):
+    query = (
+        select(Advertisement)
+        .order_by(asc(sort_column_obj) if sort_direction == "asc" else desc(sort_column_obj))
+        .limit(limit)
+        .offset(offset)
+    )
     res = await session.execute(query)
     advertisements = res.scalars().all()
     return advertisements
