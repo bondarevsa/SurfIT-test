@@ -11,8 +11,8 @@ async def create_advertisement(body: str, adv_type: str, header: str, user_id: i
     return advertisement
 
 
-async def get_all_advertisements(session: AsyncSession):
-    query = select(Advertisement).order_by(desc(Advertisement.timestamp))
+async def get_all_advertisements(session: AsyncSession, limit: int = 10, offset: int = 0):
+    query = select(Advertisement).order_by(desc(Advertisement.timestamp)).limit(limit).offset(offset)
     res = await session.execute(query)
     advertisements = res.scalars().all()
     return advertisements

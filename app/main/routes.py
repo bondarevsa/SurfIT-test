@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -12,12 +12,15 @@ from app.main.schemas import AllAdvertisements, AdvertisementBase
 
 main_router = APIRouter(tags=["main"])
 
+
 @main_router.get('/advertisements', response_model=List[AllAdvertisements])
 async def get_advertisements(
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
         current_user: User = Depends(get_current_user),
         session: AsyncSession = Depends(get_async_session)
 ):
-    advertisements = await get_all_advertisements(session)
+    advertisements = await get_all_advertisements(session, limit, offset)
     return advertisements
 
 

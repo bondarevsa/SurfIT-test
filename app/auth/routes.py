@@ -20,7 +20,7 @@ async def register_user(email: str, username: str, password: str, session: Async
     return user
 
 
-@auth_router.post("/auth", response_model=UserBase)
+@auth_router.post("/auth")
 async def authenticate_user(username: str, password: str, session: AsyncSession = Depends(get_async_session)):
     user = await get_user_by_username(username, session)
     if not user:
@@ -33,4 +33,4 @@ async def authenticate_user(username: str, password: str, session: AsyncSession 
     jwt_token = await create_jwt_token({"sub": user.username})
     response = JSONResponse(content={"access_token": jwt_token, "token_type": "bearer"})
     response.set_cookie(key="access_token", value=jwt_token, max_age=3600)
-    return user
+    return response
