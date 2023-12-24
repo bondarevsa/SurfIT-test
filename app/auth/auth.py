@@ -12,7 +12,7 @@ from config import SECRET_KEY
 ALGORITHM = "HS256"
 EXPIRATION_TIME = timedelta(minutes=30)
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/auth")
 
 
 async def create_jwt_token(data: dict):

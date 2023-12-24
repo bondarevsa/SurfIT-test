@@ -1,10 +1,11 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
+from fastapi.exceptions import RequestValidationError
 
 from app.auth.auth import get_current_user
-from app.database import User
+from app.database import User, Advertisement
 from app.database.database import get_async_session
 from app.main.accessor import create_advertisement, get_all_advertisements, delete_advertisement_by_id, \
     get_advertisement_by_id
@@ -12,12 +13,27 @@ from app.main.schemas import AllAdvertisements, AdvertisementBase
 
 main_router = APIRouter(tags=["main"])
 
+
 @main_router.get('/advertisements', response_model=List[AllAdvertisements])
 async def get_advertisements(
+        limit: Optional[int] = None,
+        offset: Optional[int] = None,
+        sort_column: Optional[str] = None,
+        sort_direction: Optional[str] = None,
         current_user: User = Depends(get_current_user),
         session: AsyncSession = Depends(get_async_session)
 ):
-    advertisements = await get_all_advertisements(session)
+    valid_sort_directions = ["asc", "desc", None]
+    if sort_direction not in valid_sort_directions:
+        raise RequestValidationError("Invalid sort direction. Use 'asc' or 'desc'")
+
+    sort_column_obj = getattr(Advertisement, sort_column, -1)
+    if sort_column_obj == -1:
+        raise RequestValidationError(f"Invalid sort column: {sort_column}")
+    if not sort_column_obj:
+        sort_column_obj = getattr(Advertisement, 'timestamp', None)
+
+    advertisements = await get_all_advertisements(sort_column_obj, session, limit, offset, sort_direction)
     return advertisements
 
 

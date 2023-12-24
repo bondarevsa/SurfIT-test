@@ -1,7 +1,6 @@
 from fastapi import Depends, APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app import app
 from app.admin.accessor import give_admin_rules
 from app.admin.admin import get_current_admin
 from app.database import User
