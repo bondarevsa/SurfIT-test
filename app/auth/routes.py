@@ -2,9 +2,11 @@ from fastapi import Depends, HTTPException
 from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import JSONResponse
+from fastapi.exceptions import ResponseValidationError
 
 from app import app
 from app.auth.auth import create_jwt_token
+from app.auth.schemas import UserBase
 from app.database.database import get_async_session
 from app.auth.accessor import create_user, get_user_by_username
 
@@ -15,10 +17,10 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 async def register_user(email: str, username: str, password: str, session: AsyncSession = Depends(get_async_session)):
     hashed_password = pwd_context.hash(password)
     user = await create_user(email, username, hashed_password, session)
-    return {"username": user.username, "hashed_password": user.hashed_password}
+    return user
 
 
-@app.post("/auth")
+@app.post("/auth", response_model=UserBase)
 async def authenticate_user(username: str, password: str, session: AsyncSession = Depends(get_async_session)):
     user = await get_user_by_username(username, session)
     if not user:
@@ -31,4 +33,4 @@ async def authenticate_user(username: str, password: str, session: AsyncSession 
     jwt_token = await create_jwt_token({"sub": user.username})
     response = JSONResponse(content={"access_token": jwt_token, "token_type": "bearer"})
     response.set_cookie(key="access_token", value=jwt_token, max_age=3600)
-    return response
+    return user
