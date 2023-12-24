@@ -1,6 +1,7 @@
 from typing import List, Optional
 
-from fastapi import Depends, HTTPException, APIRouter
+from fastapi import Depends, HTTPException, APIRouter, Path
+from sqlalchemy.exc import DBAPIError
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.exceptions import RequestValidationError
 
@@ -8,7 +9,7 @@ from app.auth.auth import get_current_user
 from app.database import User, Advertisement
 from app.database.database import get_async_session
 from app.main.accessor import create_advertisement, get_all_advertisements, delete_advertisement_by_id, \
-    get_advertisement_by_id
+    get_advertisement_by_id, create_review
 from app.main.schemas import AllAdvertisements, AdvertisementBase
 
 main_router = APIRouter(tags=["main"])
@@ -27,11 +28,11 @@ async def get_advertisements(
     if sort_direction not in valid_sort_directions:
         raise RequestValidationError("Invalid sort direction. Use 'asc' or 'desc'")
 
+    if not sort_column:
+        sort_column = 'timestamp'
     sort_column_obj = getattr(Advertisement, sort_column, -1)
     if sort_column_obj == -1:
         raise RequestValidationError(f"Invalid sort column: {sort_column}")
-    if not sort_column_obj:
-        sort_column_obj = getattr(Advertisement, 'timestamp', None)
 
     advertisements = await get_all_advertisements(sort_column_obj, session, limit, offset, sort_direction)
     return advertisements
@@ -45,7 +46,10 @@ async def create_advertisements(
         current_user: User = Depends(get_current_user),
         session: AsyncSession = Depends(get_async_session)
 ):
-    advertisement = await create_advertisement(body, adv_type, header, current_user.id, session)
+    try:
+        advertisement = await create_advertisement(body, adv_type, header, current_user.id, session)
+    except DBAPIError:
+        raise RequestValidationError(f"Invalid adv_type: {adv_type}. Use 'покупка', 'продажа' or 'оказание услуг'")
     return advertisement
 
 
@@ -73,5 +77,19 @@ async def get_advertisement(
         session: AsyncSession = Depends(get_async_session)
 ):
     advertisement = await get_advertisement_by_id(id, session)
+    if not advertisement:
+        raise HTTPException(status_code=400, detail="Advertisement not found")
     return advertisement
 
+
+@main_router.post('/advertisements/{id}/reviews')
+async def create_reviews(
+        text: str, rating: int,
+        id: int = Path(),
+        current_user: User = Depends(get_current_user),
+        session: AsyncSession = Depends(get_async_session)
+):
+    if rating not in range(1, 6):
+        raise RequestValidationError("The rating must be in the range from 1 to 5")
+    review = await create_review(text, current_user.id, rating, id, session)
+    return review

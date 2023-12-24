@@ -1,5 +1,6 @@
 from fastapi import Depends, HTTPException, APIRouter
 from passlib.context import CryptContext
+from pydantic import EmailStr
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.responses import JSONResponse
 
@@ -14,9 +15,12 @@ auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 @auth_router.post("/register")
-async def register_user(email: str, username: str, password: str, session: AsyncSession = Depends(get_async_session)):
+async def register_user(email: EmailStr, username: str, password: str, session: AsyncSession = Depends(get_async_session)):
     hashed_password = pwd_context.hash(password)
-    user = await create_user(email, username, hashed_password, session)
+    try:
+        user = await create_user(email, username, hashed_password, session)
+    except Exception:
+        raise HTTPException(status_code=409, detail="This user already exist")
     return user
 
 

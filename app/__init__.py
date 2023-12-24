@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 
+
 app = FastAPI(title="SurfIT test")
 
 from app.auth.routes import auth_router
