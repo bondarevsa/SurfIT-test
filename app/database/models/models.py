@@ -26,6 +26,7 @@ class User(Base):
     username: str = Column(String, nullable=False, unique=True)
     hashed_password: str = Column(String(length=1024), nullable=False)
     is_admin: bool = Column(Boolean, default=False, nullable=False)
+    is_banned: bool = Column(Boolean, default=False)
 
     advertisements = relationship("Advertisement", back_populates="author")
 

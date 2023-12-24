@@ -38,4 +38,6 @@ async def get_current_user(request: Request, session: AsyncSession = Depends(get
     user = await get_user_by_username(decoded_data["sub"], session)
     if not user:
         raise HTTPException(status_code=400, detail="User not found")
+    if user.is_banned:
+        raise HTTPException(status_code=403, detail="User are banned")
     return user

@@ -15,3 +15,6 @@ async def get_current_admin(
         raise HTTPException(status_code=403, detail='You are not admin')
     admin = await get_user_by_username(current_user.username, session)
     return admin
+
+
+
