@@ -20,7 +20,7 @@ class Advertisement(Base):
 
     id: int = Column(Integer, primary_key=True)
     body: str = Column(String)
-    type: str = Column(String)
+    adv_type: str = Column(String)
     header: str = Column(String)
     timestamp = Column(TIMESTAMP, default=datetime.utcnow)
     user_id: int = Column(Integer, ForeignKey('user.id'))
