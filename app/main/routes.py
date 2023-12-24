@@ -1,9 +1,8 @@
 from typing import List
 
-from fastapi import Depends, HTTPException
+from fastapi import Depends, HTTPException, APIRouter
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app import app
 from app.auth.auth import get_current_user
 from app.database import User
 from app.database.database import get_async_session
@@ -11,8 +10,9 @@ from app.main.accessor import create_advertisement, get_all_advertisements, dele
     get_advertisement_by_id
 from app.main.schemas import AllAdvertisements, AdvertisementBase
 
+main_router = APIRouter(tags=["main"])
 
-@app.get('/advertisements', response_model=List[AllAdvertisements])
+@main_router.get('/advertisements', response_model=List[AllAdvertisements])
 async def get_advertisements(
         current_user: User = Depends(get_current_user),
         session: AsyncSession = Depends(get_async_session)
@@ -21,7 +21,7 @@ async def get_advertisements(
     return advertisements
 
 
-@app.post('/advertisements', response_model=AdvertisementBase)
+@main_router.post('/advertisements', response_model=AdvertisementBase)
 async def create_advertisements(
         body: str,
         adv_type: str,
@@ -33,7 +33,7 @@ async def create_advertisements(
     return advertisement
 
 
-@app.delete('/advertisements', response_model=dict)
+@main_router.delete('/advertisements', response_model=dict)
 async def delete_advertisements(
         advertisement_id: int,
         current_user: User = Depends(get_current_user),
@@ -50,7 +50,7 @@ async def delete_advertisements(
     return {"message": "ok"}
 
 
-@app.get('/advertisements/{id}', response_model=AdvertisementBase)
+@main_router.get('/advertisements/{id}', response_model=AdvertisementBase)
 async def get_advertisement(
         id: int,
         current_user: User = Depends(get_current_user),
