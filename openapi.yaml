@@ -1,0 +1,652 @@
+openapi: 3.1.0
+info:
+  title: SurfIT test
+  version: 0.1.0
+paths:
+  /auth/register:
+    post:
+      tags:
+        - auth
+      summary: Register User
+      operationId: register_user_auth_register_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserCreate'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /auth/auth:
+    post:
+      tags:
+        - auth
+      summary: Authenticate User
+      operationId: authenticate_user_auth_auth_post
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserBase'
+        required: true
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /advertisements:
+    get:
+      tags:
+        - advertisements
+      summary: Get Advertisements
+      operationId: get_advertisements_advertisements_get
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: integer
+              - type: 'null'
+            title: Limit
+        - name: offset
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - type: integer
+              - type: 'null'
+            title: Offset
+        - name: sort_column
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - $ref: '#/components/schemas/SortColumnType'
+              - type: 'null'
+            title: Sort Column
+        - name: sort_direction
+          in: query
+          required: false
+          schema:
+            anyOf:
+              - $ref: '#/components/schemas/SortDirectionType'
+              - type: 'null'
+            title: Sort Direction
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdvertisementBase'
+                title: Response Get Advertisements Advertisements Get
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    post:
+      tags:
+        - advertisements
+      summary: Create Advertisements
+      operationId: create_advertisements_advertisements_post
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdvertisementCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdvertisementCreateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /advertisements/{id}:
+    delete:
+      tags:
+        - advertisements
+      summary: Delete Advertisements
+      operationId: delete_advertisements_advertisements__id__delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Delete Advertisements Advertisements  Id  Delete
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+    get:
+      tags:
+        - advertisements
+      summary: Get Advertisement
+      operationId: get_advertisement_advertisements__id__get
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdvertisementCreateResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /advertisements/{id}/reviews:
+    post:
+      tags:
+        - advertisements
+      summary: Create Reviews
+      operationId: create_reviews_advertisements__id__reviews_post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewCreate'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema: {}
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /advertisements/{id}/complaints:
+    post:
+      tags:
+        - advertisements
+      summary: Create Complaints
+      operationId: create_complaints_advertisements__id__complaints_post
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Id
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ComplaintBase-Input'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ComplaintResponse'
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /admins/users/{id}/give-rules:
+    put:
+      tags:
+        - admin
+      summary: Give Admin Rules To User
+      operationId: give_admin_rules_to_user_admins_users__id__give_rules_put
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Give Admin Rules To User Admins Users  Id  Give Rules Put
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /admins/users/{id}/ban:
+    put:
+      tags:
+        - admin
+      summary: Ban Users
+      operationId: ban_users_admins_users__id__ban_put
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Ban Users Admins Users  Id  Ban Put
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /admins/users/{id}/unban:
+    put:
+      tags:
+        - admin
+      summary: Unban Users
+      operationId: unban_users_admins_users__id__unban_put
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Unban Users Admins Users  Id  Unban Put
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /admins/reviews/{id}:
+    delete:
+      tags:
+        - admin
+      summary: Delete Reviews
+      operationId: delete_reviews_admins_reviews__id__delete
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Id
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Delete Reviews Admins Reviews  Id  Delete
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+  /admins/complaints:
+    get:
+      tags:
+        - admin
+      summary: Get Complaints
+      operationId: get_complaints_admins_complaints_get
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/ComplaintBase-Output'
+                type: array
+                title: Response Get Complaints Admins Complaints Get
+  /admins/advertisements/{id}:
+    put:
+      tags:
+        - admin
+      summary: Change Advertisements Type
+      operationId: change_advertisements_type_admins_advertisements__id__put
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            title: Id
+        - name: advertisement_type
+          in: query
+          required: true
+          schema:
+            $ref: '#/components/schemas/AdvertisementType'
+      responses:
+        '200':
+          description: Successful Response
+          content:
+            application/json:
+              schema:
+                type: object
+                title: Response Change Advertisements Type Admins Advertisements  Id  Put
+        '422':
+          description: Validation Error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HTTPValidationError'
+components:
+  schemas:
+    AdvertisementBase:
+      properties:
+        id:
+          type: integer
+          title: Id
+        adv_type:
+          $ref: '#/components/schemas/AdvertisementType'
+        header:
+          type: string
+          title: Header
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        created_by:
+          type: integer
+          title: Created By
+      type: object
+      required:
+        - id
+        - adv_type
+        - header
+        - created_at
+        - created_by
+      title: AdvertisementBase
+    AdvertisementCreate:
+      properties:
+        body:
+          type: string
+          title: Body
+        adv_type:
+          $ref: '#/components/schemas/AdvertisementType'
+        header:
+          type: string
+          title: Header
+      type: object
+      required:
+        - body
+        - adv_type
+        - header
+      title: AdvertisementCreate
+    AdvertisementCreateResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        adv_type:
+          $ref: '#/components/schemas/AdvertisementType'
+        header:
+          type: string
+          title: Header
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        created_by:
+          type: integer
+          title: Created By
+        body:
+          type: string
+          title: Body
+      type: object
+      required:
+        - id
+        - adv_type
+        - header
+        - created_at
+        - created_by
+        - body
+      title: AdvertisementCreateResponse
+    AdvertisementType:
+      type: string
+      enum:
+        - продажа
+        - покупка
+        - оказание услуг
+      title: AdvertisementType
+    ComplaintBase-Input:
+      properties:
+        text:
+          type: string
+          title: Text
+        complaint_type:
+          $ref: '#/components/schemas/ComplaintType'
+      type: object
+      required:
+        - text
+        - complaint_type
+      title: ComplaintBase
+    ComplaintBase-Output:
+      properties:
+        id:
+          type: integer
+          title: Id
+        complaint_type:
+          $ref: '#/components/schemas/ComplaintType'
+        text:
+          type: string
+          title: Text
+        advertisement_id:
+          type: integer
+          title: Advertisement Id
+        created_by:
+          type: integer
+          title: Created By
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+      type: object
+      required:
+        - id
+        - complaint_type
+        - text
+        - advertisement_id
+        - created_by
+        - created_at
+      title: ComplaintBase
+    ComplaintResponse:
+      properties:
+        text:
+          type: string
+          title: Text
+        complaint_type:
+          $ref: '#/components/schemas/ComplaintType'
+        id:
+          type: integer
+          title: Id
+        advertisement_id:
+          type: integer
+          title: Advertisement Id
+        created_at:
+          type: string
+          format: date-time
+          title: Created At
+        created_by:
+          type: integer
+          title: Created By
+      type: object
+      required:
+        - text
+        - complaint_type
+        - id
+        - advertisement_id
+        - created_at
+        - created_by
+      title: ComplaintResponse
+    ComplaintType:
+      type: string
+      enum:
+        - мошенничество
+        - спам
+        - неверная категория
+        - нецензурные выражения
+      title: ComplaintType
+    HTTPValidationError:
+      properties:
+        detail:
+          items:
+            $ref: '#/components/schemas/ValidationError'
+          type: array
+          title: Detail
+      type: object
+      title: HTTPValidationError
+    ReviewCreate:
+      properties:
+        text:
+          type: string
+          title: Text
+        rating:
+          type: integer
+          maximum: 5
+          minimum: 1
+          title: Rating
+      type: object
+      required:
+        - text
+        - rating
+      title: ReviewCreate
+    SortColumnType:
+      type: string
+      enum:
+        - id
+        - adv_type
+        - header
+        - body
+        - created_at
+        - created_by
+      title: SortColumnType
+    SortDirectionType:
+      type: string
+      enum:
+        - asc
+        - desc
+      title: SortDirectionType
+    UserBase:
+      properties:
+        username:
+          type: string
+          title: Username
+        password:
+          type: string
+          title: Password
+      type: object
+      required:
+        - username
+        - password
+      title: UserBase
+    UserCreate:
+      properties:
+        username:
+          type: string
+          title: Username
+        password:
+          type: string
+          title: Password
+        email:
+          type: string
+          format: email
+          title: Email
+      type: object
+      required:
+        - username
+        - password
+        - email
+      title: UserCreate
+    ValidationError:
+      properties:
+        loc:
+          items:
+            anyOf:
+              - type: string
+              - type: integer
+          type: array
+          title: Location
+        msg:
+          type: string
+          title: Message
+        type:
+          type: string
+          title: Error Type
+      type: object
+      required:
+        - loc
+        - msg
+        - type
+      title: ValidationError
