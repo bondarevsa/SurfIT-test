@@ -20,7 +20,8 @@ paths:
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/UserResponse'
         '422':
           description: Validation Error
           content:
@@ -44,7 +45,8 @@ paths:
           description: Successful Response
           content:
             application/json:
-              schema: {}
+              schema:
+                $ref: '#/components/schemas/TokenBase'
         '422':
           description: Validation Error
           content:
@@ -598,6 +600,19 @@ components:
         - asc
         - desc
       title: SortDirectionType
+    TokenBase:
+      properties:
+        access_token:
+          type: string
+          title: Access Token
+        token_type:
+          type: string
+          title: Token Type
+      type: object
+      required:
+        - access_token
+        - token_type
+      title: TokenBase
     UserBase:
       properties:
         username:
@@ -629,6 +644,24 @@ components:
         - password
         - email
       title: UserCreate
+    UserResponse:
+      properties:
+        id:
+          type: integer
+          title: Id
+        email:
+          type: string
+          format: email
+          title: Email
+        username:
+          type: string
+          title: Username
+      type: object
+      required:
+        - id
+        - email
+        - username
+      title: UserResponse
     ValidationError:
       properties:
         loc:
