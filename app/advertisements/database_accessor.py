@@ -3,7 +3,7 @@ from typing import List
 from sqlalchemy import asc, delete, desc, select
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.database import Advertisement, Review
+from app.database import Advertisement, Complaint, Review
 
 
 async def create_advertisement(
@@ -65,3 +65,21 @@ async def create_review(
     session.add(review)
     await session.commit()
     return review
+
+
+async def create_complaint(
+    text: str,
+    complaint_type: str,
+    created_by: int,
+    advertisement_id: int,
+    session: AsyncSession,
+):
+    complaint = Complaint(
+        text=text,
+        complaint_type=complaint_type,
+        created_by=created_by,
+        advertisement_id=advertisement_id,
+    )
+    session.add(complaint)
+    await session.commit()
+    return complaint

@@ -6,6 +6,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.advertisements.database_accessor import (
     create_advertisement,
+    create_complaint,
     create_review,
     delete_advertisement_by_id,
     get_advertisement_by_id,
@@ -14,10 +15,13 @@ from app.advertisements.database_accessor import (
 from app.advertisements.schemas import (
     AdvertisementBase,
     AdvertisementCreate,
+    AdvertisementCreateResponse,
+    ComplaintBase,
+    ComplaintResponse,
     ReviewCreate,
 )
 from app.auth.auth import get_current_user
-from app.database import Advertisement, SortColumnType, SortDirectionType, User
+from app.database import SortColumnType, SortDirectionType, User
 from app.database.database import get_async_session
 
 advertisement_router = APIRouter(tags=["advertisements"])
@@ -40,7 +44,9 @@ async def get_advertisements(
     return advertisements
 
 
-@advertisement_router.post("/advertisements", response_model=Advertisement)
+@advertisement_router.post(
+    "/advertisements", response_model=AdvertisementCreateResponse
+)
 async def create_advertisements(
     advertisement: AdvertisementCreate,
     current_user: User = Depends(get_current_user),
@@ -77,7 +83,9 @@ async def delete_advertisements(
     return {"message": "ok"}
 
 
-@advertisement_router.get("/advertisements/{id}", response_model=Advertisement)
+@advertisement_router.get(
+    "/advertisements/{id}", response_model=AdvertisementCreateResponse
+)
 async def get_advertisement(
     id: int,
     current_user: User = Depends(get_current_user),
@@ -107,3 +115,23 @@ async def create_reviews(
             status_code=status.HTTP_404_NOT_FOUND, detail="Advertisement not found."
         )
     return review
+
+
+@advertisement_router.post(
+    "/advertisements/{id}/complaints", response_model=ComplaintResponse
+)
+async def create_complaints(
+    complaint: ComplaintBase,
+    id: int = Path(),
+    current_user: User = Depends(get_current_user),
+    session: AsyncSession = Depends(get_async_session),
+):
+    try:
+        complaint = await create_complaint(
+            complaint.text, complaint.complaint_type, current_user.id, id, session
+        )
+    except IntegrityError:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND, detail="Advertisement not found."
+        )
+    return complaint
