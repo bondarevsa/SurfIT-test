@@ -27,10 +27,11 @@ class SortDirectionType(str, PythonEnum):
     desc = "desc"
 
 
-# class ComplaintType(str, PythonEnum):
-#     SALE = 'продажа'
-#     PURCHASE = 'покупка'
-#     SERVICE = 'оказание услуг'
+class ComplaintType(str, PythonEnum):
+    fraud = "мошенничество"
+    spam = "спам"
+    wrong_category = "неверная категория"
+    obscene_expressions = "нецензурные выражения"
 
 
 class User(Base):
@@ -55,7 +56,7 @@ class Advertisement(Base):
     created_at: datetime = Column(TIMESTAMP, default=datetime.utcnow)
     created_by: int = Column(Integer, ForeignKey("user.id"))
 
-    comment = relationship("Review")
+    review = relationship("Review")
     author = relationship("User", back_populates="advertisements", lazy="joined")
 
 
@@ -72,13 +73,14 @@ class Review(Base):
     author = relationship("User", lazy="joined")
 
 
-# class Complaint(Base):
-#     __tablename__ = "complaint"
-#
-#     id: int = Column(Integer, primary_key=True)
-#     text: str = Column(String)
-#     created_at = Column(TIMESTAMP, default=datetime.utcnow)
-#     user_id: int = Column(Integer, ForeignKey("user.id"))
-#     advertisement_id: int = Column(Integer, ForeignKey("advertisement.id"))
-#
-#     author = relationship("User", lazy='joined')
+class Complaint(Base):
+    __tablename__ = "complaint"
+
+    id: int = Column(Integer, primary_key=True)
+    text: str = Column(String)
+    created_at = Column(TIMESTAMP, default=datetime.utcnow)
+    complaint_type: str = Column(Enum(ComplaintType))
+    created_by: int = Column(Integer, ForeignKey("user.id"))
+    advertisement_id: int = Column(Integer, ForeignKey("advertisement.id"))
+
+    author = relationship("User", lazy="joined")
